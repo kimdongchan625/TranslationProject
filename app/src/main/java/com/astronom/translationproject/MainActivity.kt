@@ -25,15 +25,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -54,10 +46,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.astronom.translationproject.ui.theme.TranslationProjectTheme
 import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.nl.translate.TranslateLanguage
@@ -102,22 +90,10 @@ private var lastAnalyzedTimestamp = 0L
 private const val ANALYSIS_INTERVAL_MILLIS = 3000L // 3초 (3000 밀리초)
 
 
-
-// 화면 정의 (데이터 클래스 또는 sealed class로 정의하는 것이 일반적)
-sealed class Screen(val route: String, val icon: ImageVector, val title: String) {
-    object Home : Screen("home", Icons.Default.Home, "홈")
-    object Profile : Screen("profile", Icons.Default.Person, "프로필")
-    object Settings : Screen("settings", Icons.Default.Settings, "설정")
-}
-
-
 @Composable
 fun MainScreen() {
 
     val context = LocalContext.current
-
-    val navController = rememberNavController() // NavController 생성
-    val screens = listOf(Screen.Home, Screen.Profile, Screen.Settings)
 
     // recognizedTextState를 직접 사용합니다.
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -242,46 +218,6 @@ fun MainScreen() {
                 )
             }
         }
-        Scaffold(
-            bottomBar = {
-                NavigationBar {
-                    val navBackStackEntry by navController.currentBackStackEntryAsState()
-                    val currentRoute = navBackStackEntry?.destination?.route
-
-                    screens.forEach { screen ->
-                        NavigationBarItem(
-                            icon = { Icon(screen.icon, contentDescription = screen.title) },
-                            label = { Text(screen.title) },
-                            selected = currentRoute == screen.route,
-                            onClick = {
-                                navController.navigate(screen.route) {
-                                    // 탭을 다시 눌렀을 때 백 스택에 중복으로 쌓이는 것을 방지
-                                    popUpTo(navController.graph.startDestinationId) {
-                                        saveState = true
-                                    }
-                                    // 재선택 시 이미 스택에 있는 경우 재생성 방지
-                                    launchSingleTop = true
-                                    // 상태 저장 및 복원
-                                    restoreState = true
-                                }
-                            }
-                        )
-                    }
-                }
-            }
-        ) { paddingValues ->
-            NavHost(
-                navController = navController,
-                startDestination = Screen.Home.route,
-                modifier = Modifier.padding(paddingValues)
-            ) {
-                // 각 화면(Composable)을 NavGraph에 정의
-                composable(Screen.Home.route) { HomeScreen() }
-                composable(Screen.Profile.route) { ProfileScreen() }
-                composable(Screen.Settings.route) { SettingsScreen() }
-            }
-        }
-
 
     }
 }
@@ -363,14 +299,3 @@ private class YourImageAnalyzer : ImageAnalysis.Analyzer {
         }
     }
 }
-
-// 실제 화면 Composable 함수들
-@Composable
-fun HomeScreen() { Text("홈 화면")
-}
-
-@Composable
-fun ProfileScreen() { Text("프로필 화면") }
-
-@Composable
-fun SettingsScreen() { Text("설정 화면") }
