@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -162,7 +163,7 @@ fun MainScreen() {
             translated = "" // 번역 비활성화 또는 인식된 텍스트가 없으면 번역된 텍스트 초기화
         }
     }
-    val resultText = translated.replace(Regex("[a-zA-Z]"), "")
+    val resultText = translated.replace(Regex("[^\\p{IsHangul}]"), " ")
     var lastResultText: String by remember { mutableStateOf("") }
 
 
@@ -177,15 +178,29 @@ fun MainScreen() {
         Spacer(Modifier.size(50.dp))
         Row(
             Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
+            Arrangement.SpaceBetween
         ) {
-            Button(onClick = {
-                val intent = Intent(context, SubActivity::class.java).apply{
-                    putExtra("recognizedText", lastRecognizedText)
-                    putExtra("translatedText", lastResultText)
-                }
-                context.startActivity(intent)
-            }) {
+            Text(
+                text = "Text Extractor",
+                fontSize = 28.sp,
+                color = Color(0xFF00FF00), // 네온 그린
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 16.dp)
+            )
+            Button(
+                onClick = {
+                    val intent = Intent(context, SubActivity::class.java).apply {
+                        putExtra("recognizedText", lastRecognizedText)
+                        putExtra("translatedText", lastResultText)
+                    }
+                    context.startActivity(intent)
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Black, // 버튼 배경 검정
+                    contentColor = Color(0xFF00FF00) // 텍스트/아이콘 색상 네온 그린
+                )
+            ) {
                 Text(text = "detail->")
             }
         }
@@ -203,21 +218,37 @@ fun MainScreen() {
         )
         Spacer(Modifier.size(20.dp))
         Row {
-            Button(onClick = {
-                flag = !flag
-            }) {
-                if(flag){
+            Button(
+                onClick = {
+                    flag = !flag
+                },
+                colors = ButtonDefaults.buttonColors( // 🚩 버튼 색상 네온 그린
+                    containerColor = Color(0xFF00FF00), // 네온 그린 배경
+                    contentColor = Color.Black // 텍스트 색상 검정
+                ),
+                shape = RoundedCornerShape(8.dp), // 둥근 모서리
+            ) {
+                if (flag) {
                     Text(text = "텍스트 추출 중지")
-                }else{
+                } else {
                     Text(text = "텍스트 추출 시작")
                 }
             }
-            Button(onClick = {
-                flagTwo = !flagTwo
-            }) {
-                if(flagTwo){
+            Spacer(Modifier.size(20.dp))
+            Button(
+                onClick = {
+                    flagTwo = !flagTwo
+                },
+                colors = ButtonDefaults.buttonColors( // 🚩 버튼 색상 네온 그린
+                    containerColor = Color(0xFF00FF00), // 네온 그린 배경
+                    contentColor = Color.Black // 텍스트 색상 검정
+                ),
+                shape = RoundedCornerShape(8.dp), // 둥근 모서리
+
+            ) {
+                if (flagTwo) {
                     Text(text = "번역 중지")
-                }else{
+                } else {
                     Text(text = "번역 시작")
                 }
             }
@@ -231,7 +262,7 @@ fun MainScreen() {
         Row(
             Modifier
                 .fillMaxWidth()
-                .background(Color.LightGray)
+                .background(Color.Black)
         ) {
             if (flag) {
                 lastRecognizedText = recognizedText
@@ -240,9 +271,11 @@ fun MainScreen() {
                 text = lastRecognizedText,
                 fontSize = 10.sp,
                 lineHeight = 12.sp,
+                color = Color.Cyan,
                 modifier = Modifier
                     .weight(1f)
-                    .background(Color.Cyan)
+                    .background(Color(0xFF1A1A1A))
+                    .padding(horizontal = 16.dp)
             )
             if (flagTwo) {
                 lastResultText = resultText
@@ -251,9 +284,11 @@ fun MainScreen() {
                 text = lastResultText,
                 fontSize = 10.sp,
                 lineHeight = 12.sp,
+                color = Color.Magenta,
                 modifier = Modifier
                     .weight(1f)
-                    .background(Color.Magenta)
+                    .background(Color(0xFF1A1A1A))
+                    .padding(horizontal = 16.dp)
             )
         }
 
