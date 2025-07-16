@@ -180,10 +180,13 @@ fun MainScreen() {
             horizontalArrangement = Arrangement.End
         ) {
             Button(onClick = {
-                val intent = Intent(context, SubActivity::class.java)
+                val intent = Intent(context, SubActivity::class.java).apply{
+                    putExtra("recognizedText", lastRecognizedText)
+                    putExtra("translatedText", lastResultText)
+                }
                 context.startActivity(intent)
             }) {
-                Text(text = "->")
+                Text(text = "detail->")
             }
         }
         // 카메라 프리뷰 뷰 추가
@@ -203,12 +206,20 @@ fun MainScreen() {
             Button(onClick = {
                 flag = !flag
             }) {
-                Text(text = "텍스트 추출 on/off")
+                if(flag){
+                    Text(text = "텍스트 추출 중지")
+                }else{
+                    Text(text = "텍스트 추출 시작")
+                }
             }
             Button(onClick = {
                 flagTwo = !flagTwo
             }) {
-                Text(text = "텍스트 번역 on/off")
+                if(flagTwo){
+                    Text(text = "번역 중지")
+                }else{
+                    Text(text = "번역 시작")
+                }
             }
         }
         Spacer(Modifier.size(20.dp))
