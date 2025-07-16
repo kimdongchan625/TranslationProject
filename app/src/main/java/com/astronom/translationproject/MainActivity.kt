@@ -163,7 +163,10 @@ fun MainScreen() {
             translated = "" // 번역 비활성화 또는 인식된 텍스트가 없으면 번역된 텍스트 초기화
         }
     }
-    val resultText = translated.replace(Regex("[^\\p{IsHangul}]"), " ")
+    val resultText = translated
+        .replace(Regex("[^\\p{IsHangul}]"), " ")   // 한글 제외하고 공백
+        .replace(Regex("\\s+"), " ")               // 다중 공백 하나로 줄이기
+        .trim()                                     // 앞뒤 공백 제거
     var lastResultText: String by remember { mutableStateOf("") }
 
 

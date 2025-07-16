@@ -1,6 +1,7 @@
 package com.astronom.translationproject
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -23,11 +24,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import com.astronom.translationproject.ui.theme.TranslationProjectTheme
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.analytics
+import com.google.firebase.analytics.logEvent
 import com.google.mlkit.vision.text.Text
 
 class SubActivity : ComponentActivity() {
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        firebaseAnalytics = Firebase.analytics
         var receivedRecognizedText = intent.getStringExtra("recognizedText") ?: "내용없음"
         var receivedTranslatedText = intent.getStringExtra("translatedText") ?: "내용없음"
 
@@ -35,6 +42,7 @@ class SubActivity : ComponentActivity() {
         setContent {
             TranslationProjectTheme {
                 DetailScreen(
+                    firebaseAnalytics = firebaseAnalytics,
                     recognizedText = receivedRecognizedText,
                     translatedText = receivedTranslatedText
                 )
@@ -44,7 +52,11 @@ class SubActivity : ComponentActivity() {
 }
 
 @Composable
-fun DetailScreen(recognizedText: String, translatedText: String) {
+fun DetailScreen(
+    recognizedText: String,
+    translatedText: String,
+    firebaseAnalytics: FirebaseAnalytics,
+) {
     var editableRecognizedText by remember { mutableStateOf(recognizedText) }
     var editableTranslatedText by remember { mutableStateOf(translatedText) }
 
@@ -56,19 +68,28 @@ fun DetailScreen(recognizedText: String, translatedText: String) {
         Alignment.CenterHorizontally,
 
         ) {
-        Row (Modifier.fillMaxWidth(),
-            Arrangement.SpaceBetween){
+        Row(
+            Modifier.fillMaxWidth(),
+            Arrangement.SpaceBetween
+        ) {
             Text(
                 text = "Detail Screen", fontSize = 30.sp,
                 color = Color(0xFF00FF00)
             )
 
-            Button(onClick = {},
+            Button(
+                onClick = {
+                    firebaseAnalytics.logEvent("detail_screen_accessed") {
+                        param("translated_text_on_detail_access", editableTranslatedText)
+                    }
+                    Log.d("FirebaseAnalytics", "Event logged: detail_screen_accessed")
+                    Log.d("FirebaseAnalytics", "Translated text sent: $editableTranslatedText")
+                },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Black, // 버튼 배경 검정
                     contentColor = Color(0xFF00FF00) // 텍스트/아이콘 색상 네온 그린
                 )
-                ) {
+            ) {
                 Text(text = "전송")
             }
         }

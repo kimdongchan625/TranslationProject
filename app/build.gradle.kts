@@ -2,6 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+
+//    id("com.android.application")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -69,6 +72,9 @@ dependencies {
 
     val nav_version = "2.7.0" // 최신 안정화 버전으로 변경하세요!
     implementation("androidx.navigation:navigation-compose:$nav_version")
+
+    implementation(platform("com.google.firebase:firebase-bom:33.16.0"))
+    implementation("com.google.firebase:firebase-analytics")
 
 
 }

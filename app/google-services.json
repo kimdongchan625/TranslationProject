@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "760799073087",
+    "project_id": "fir-7fcbe",
+    "storage_bucket": "fir-7fcbe.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:760799073087:android:4428b8d59427acf59cf98a",
+        "android_client_info": {
+          "package_name": "com.astronom.firebase"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANTsF5-dzt-lnPcydOAGCPFE9-dTBpvoQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:760799073087:android:29abc3ef1bb7fb489cf98a",
+        "android_client_info": {
+          "package_name": "com.astronom.translationproject"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANTsF5-dzt-lnPcydOAGCPFE9-dTBpvoQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
