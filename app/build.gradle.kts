@@ -70,4 +70,5 @@ dependencies {
     val nav_version = "2.7.0" // 최신 안정화 버전으로 변경하세요!
     implementation("androidx.navigation:navigation-compose:$nav_version")
 
+
 }

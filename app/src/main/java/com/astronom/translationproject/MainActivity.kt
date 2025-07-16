@@ -2,6 +2,7 @@ package com.astronom.translationproject
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -98,10 +99,12 @@ fun MainScreen() {
     // recognizedTextState를 직접 사용합니다.
     val lifecycleOwner = LocalLifecycleOwner.current
     var flag by remember { mutableStateOf(false) }
+    var flagTwo by remember { mutableStateOf(false) }
 
     // recognizeTextState 값을 가져와 UI에 바인딩
 
-    val recognizedText by recognizedTextState
+    var recognizedText by recognizedTextState
+    var lastRecognizedText: String by remember { mutableStateOf("") }
 
     val imageAnalyzer = remember {
         ImageAnalysis.Builder()
@@ -141,9 +144,13 @@ fun MainScreen() {
             }
     }
     var translated by remember { mutableStateOf("") }
-    LaunchedEffect(recognizedText, flag, isReady) { // recognizedText, flag, isReady가 변경될 때 실행
-        if (flag && isReady && recognizedText.isNotEmpty()) { // flag가 true이고, 모델이 준비되었고, 인식된 텍스트가 있을 때만 번역
-            enKoTranslator.translate(recognizedText)
+    LaunchedEffect(
+        lastRecognizedText,
+        flag,
+        isReady
+    ) { // lastRecognizedText, flag, isReady가 변경될 때 실행
+        if (isReady && lastRecognizedText.isNotEmpty()) { // flag가 true이고, 모델이 준비되었고, 인식된 텍스트가 있을 때만 번역
+            enKoTranslator.translate(lastRecognizedText)
                 .addOnSuccessListener { translatedText ->
                     translated = translatedText
                 }
@@ -151,11 +158,12 @@ fun MainScreen() {
                     Log.e("Translation", "Translation failed", exception)
                     translated = "번역 실패" // 사용자에게 오류 표시
                 }
-        } else if (!flag || recognizedText.isEmpty()) {
+        } else if (!flag || lastRecognizedText.isEmpty()) {
             translated = "" // 번역 비활성화 또는 인식된 텍스트가 없으면 번역된 텍스트 초기화
         }
     }
     val resultText = translated.replace(Regex("[a-zA-Z]"), "")
+    var lastResultText: String by remember { mutableStateOf("") }
 
 
     Column(
@@ -167,6 +175,17 @@ fun MainScreen() {
 
         ) {
         Spacer(Modifier.size(50.dp))
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End
+        ) {
+            Button(onClick = {
+                val intent = Intent(context, SubActivity::class.java)
+                context.startActivity(intent)
+            }) {
+                Text(text = "->")
+            }
+        }
         // 카메라 프리뷰 뷰 추가
         CameraPreviewView(
             modifier = Modifier // 🚩 Modifier 적용
@@ -180,10 +199,17 @@ fun MainScreen() {
             imageAnalyzer = imageAnalyzer
         )
         Spacer(Modifier.size(20.dp))
-        Button(onClick = {
-            flag = !flag
-        }) {
-            Text(text = "번역 on/off")
+        Row {
+            Button(onClick = {
+                flag = !flag
+            }) {
+                Text(text = "텍스트 추출 on/off")
+            }
+            Button(onClick = {
+                flagTwo = !flagTwo
+            }) {
+                Text(text = "텍스트 번역 on/off")
+            }
         }
         Spacer(Modifier.size(20.dp))
         Row {
@@ -197,26 +223,27 @@ fun MainScreen() {
                 .background(Color.LightGray)
         ) {
             if (flag) {
-
-                Text(
-                    text = recognizedText,
-                    fontSize = 10.sp,
-                    lineHeight = 12.sp,
-                    modifier = Modifier
-                        .weight(1f)
-                        .background(Color.Cyan)
-
-                )
-
-                Text(
-                    text = resultText,
-                    fontSize = 10.sp,
-                    lineHeight = 12.sp,
-                    modifier = Modifier
-                        .weight(1f)
-                        .background(Color.Magenta)
-                )
+                lastRecognizedText = recognizedText
             }
+            Text(
+                text = lastRecognizedText,
+                fontSize = 10.sp,
+                lineHeight = 12.sp,
+                modifier = Modifier
+                    .weight(1f)
+                    .background(Color.Cyan)
+            )
+            if (flagTwo) {
+                lastResultText = resultText
+            }
+            Text(
+                text = lastResultText,
+                fontSize = 10.sp,
+                lineHeight = 12.sp,
+                modifier = Modifier
+                    .weight(1f)
+                    .background(Color.Magenta)
+            )
         }
 
     }
